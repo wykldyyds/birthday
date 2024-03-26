@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>效果</title>
+<style>
+  body {
+    background: linear-gradient(to bottom, #3cb93c, #00ff00); /* 深绿到浅绿渐变色的背景 */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    position: relative;
+    perspective: 1000px; /* 添加透视效果，增强立体感 */
+  }
+
+  .heart {
+    position: relative;
+    font-size: 200px;
+    color: #ff3366;
+    animation: heartbeat 1s infinite;
+    z-index: 1;
+    text-align: center; /* 居中文本 */
+    cursor: pointer;  /* 添加鼠标指针样式 */
+  }
+
+  .heart-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    color: #fff;
+  }
+
+  @keyframes heartbeat {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .small-heart {
+    position: absolute;
+    font-size: 50px; /* 增大泡泡尺寸 */
+    color: rgba(143, 188, 143, 0.8); /* 调整泡泡颜色为浅绿 */
+    animation: fly 4s ease-out;
+    z-index: 0;
+  }
+
+  @keyframes fly {
+    0% {
+      top: 50%;
+      left: 50%;
+      transform: scale(0.5) translate(-50%, -50%);
+    }
+    100% {
+      top: calc(50% + 300px * sin(var(--angle)));
+      left: calc(50% + 300px * cos(var(--angle)));
+      transform: scale(0.5) translate(-50%, -50%);
+    }
+  }
+
+  .bubble {
+    position: absolute;
+    width: 20px;  /* 增大泡泡尺寸 */
+    height: 20px;  /* 增大泡泡尺寸 */
+    background-color: rgba(143, 188, 143, 0.7); /* 调整泡泡颜色透明度 */
+    border-radius: 50%;
+    animation: bubble 5s infinite;
+  }
+
+  @keyframes bubble {
+    0% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-100px) scale(1.5);
+    }
+    100% {
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .play-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    font-size: 20px;
+    background-color: #008000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 3;
+  }
+  
+  .marquee {
+    position: absolute;
+    top: 0;
+    width: 1350px;
+    font-size: 18px;
+    color: #fff;
+    background: linear-gradient(to right, transparent, #3cb93c, #00ff00, transparent);
+    z-index: 4;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: marqueeScroll 20s linear infinite;
+  }
+  
+  @keyframes marqueeScroll {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="marquee">
+    茶树作为我国南部主要的经济作物之一，茶叶产量深受病虫害的影响。智能化的发展为大幅提高监控茶叶害虫天敌的效率提供了新的思路，使农业的防治变得更加可控。
+  </div>
+  <div class="heart" onclick="onClickHeart()">🍃<span class="heart-text">请点击我</span></div>
+  <button class="play-button">播放音乐</button>
+  <script>
+    const audio = new Audio('background_music.mp3');
+    let isPlaying = false;
+    let heartPositionX = 50;
+    let heartPositionY = 50;
+    let clickCount = 0;
+
+    function playMusic() {
+      audio.loop = true;
+      audio.play();
+      isPlaying = true;
+    }
+
+    function stopMusic() {
+      audio.pause();
+      audio.currentTime = 0;
+      isPlaying = false;
+    }
+
+    function moveHeart(direction) {
+      switch(direction) {
+        case 'ArrowUp':
+          heartPositionY -= 10;
+          break;
+        case 'ArrowDown':
+          heartPositionY += 10;
+          break;
+        case 'ArrowLeft':
+          heartPositionX -= 10;
+          break;
+        case 'ArrowRight':
+          heartPositionX += 10;
+          break;
+      }
+      document.querySelector('.heart').style.top = heartPositionY + '%';
+      document.querySelector('.heart-text').innerHTML = '请点击我'; // 修改文本内容
+      document.querySelector('.heart').style.left = heartPositionX + '%';
+    }
+
+    function onClickHeart() {
+      if (clickCount === 0) {
+        playMusic();
+      } else if (clickCount === 1) {
+        window.location.href = 'new_page.html';
+      }
+
+      clickCount++;
+    }
+
+    document.querySelector('.play-button').addEventListener('click', function() {
+      if (isPlaying) {
+        stopMusic();
+        this.textContent = '播放音乐';
+      } else {
+        playMusic();
+        this.textContent = '停止音乐';
+      }
+    });
+
+    document.addEventListener('mousemove', playMusic);
+
+    document.addEventListener('keydown', function(event) {
+      if (event.code === 'Space') {
+        if (isPlaying) {
+          stopMusic();
+          document.querySelector('.play-button').textContent = '播放音乐';
+        } else {
+          playMusic();
+          document.querySelector('.play-button').textContent = '停止音乐';
+        }
+      } else {
+        moveHeart(event.code);
+      }
+    });
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('small-heart');
+      heart.innerHTML = '○'; // 圆形泡泡图标
+      heart.style.setProperty('--angle', Math.random() * 360 + 'deg');
+      document.body.appendChild(heart);
+      
+      setTimeout(() => {
+        heart.remove();
+      }, 4000);
+    }
+
+    setInterval(createHeart, 20);
+
+    function createBubble() {
+      const bubble = document.createElement('div');
+      bubble.classList.add('bubble');
+      bubble.style.left = Math.random() * 100 + 'vw';
+      document.body.appendChild(bubble);
+
+      setTimeout(() => {
+        bubble.remove();
+      }, 5000);
+    }
+
+    setInterval(createBubble, 200);
+
+  </script>
+</body>
+</html>
